@@ -1,15 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using HamburgerWebApp.BLL.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HamburgerWebApp.UI.Controllers
 {
     [Authorize]
     public class OrderController : Controller
     {
-        // GET: OrderController
-        public ActionResult Index()
+        private readonly IOrderService _orderService;
+
+        public OrderController(IOrderService orderService)
         {
-            return View();
+            _orderService = orderService;
+        }
+        // GET: OrderController
+        public async Task<ActionResult> Index()
+        {
+            if (User.IsInRole("Admin"))
+            {
+                var orderList = await _orderService.GetAll();
+                return View(orderList);
+            }
+            else
+            {
+                var orderList = await _orderService.GetAll(order => order.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+                return View(orderList);
+            }
         }
 
         // GET: OrderController/Details/5
