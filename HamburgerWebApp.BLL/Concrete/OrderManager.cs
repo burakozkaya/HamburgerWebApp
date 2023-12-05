@@ -31,9 +31,9 @@ public class OrderManager : BaseManager<Order>, IOrderService
         {
             totalPrice += order.Extras.Sum(extra => extra.Price);
         }
-
+        totalPrice *= order.OrderPiece;
         return totalPrice;
     }
 
-   
+
 }

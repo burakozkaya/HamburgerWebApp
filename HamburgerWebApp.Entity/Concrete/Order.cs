@@ -12,5 +12,6 @@ public class Order : BaseEntity
     //Nav Property
     public OrderSize OrderSize { get; set; }
     public Menu Menu { get; set; }
+
     public AppUser AppUser { get; set; }
 }

@@ -54,23 +54,23 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
         {
-            var menus=await _menuService.GetAll();
+            var menus = await _menuService.GetAll();
             var orderSize = await _orderSizeService.GetAll();
             var orders = await _orderService.GetAll();
-            var extra=await _extraService.GetAll();
+            var extra = await _extraService.GetAll();
 
             var orderSizeList = orderSize.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Size
-            }).Distinct(); 
+            }).Distinct();
 
             var menuList = menus.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-            var Extra = menus.Select(order => new SelectListItem
+            var Extra = extra.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
@@ -93,8 +93,13 @@ namespace HamburgerWebApp.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Order order)
         {
+            order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
+            ModelState.Remove("OrderSize");
+            ModelState.Remove("Menu");
+            ModelState.Remove("AppUser");
+            ModelState.Remove("Extras");
+            ModelState.Remove("AppUserId");
             // Code for creating a new record in the database
-            order.AppUserId=User.FindFirstValue(claimType:ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
                 //order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
@@ -102,6 +107,9 @@ namespace HamburgerWebApp.UI.Controllers
                 await _orderService.Add(order);
                 return RedirectToAction(nameof(Index));
             }
+
+            var temp = ModelState.ErrorCount;
+            var tempx = ModelState.Values;
             return View(order);
         }
 
