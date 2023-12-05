@@ -8,11 +8,13 @@ public class OrderManager : BaseManager<Order>, IOrderService
 {
     private readonly IMenuRepository _menuRepository;
     private readonly IOrderSizeRepository _orderSizeRepository;
-    public OrderManager(IBaseRepository<Order> baseRepository, IMenuRepository menuRepository, IOrderSizeRepository orderSizeRepository)
+    private readonly IExtraRepository _extraRepository;
+    public OrderManager(IBaseRepository<Order> baseRepository, IExtraRepository extraRepository, IMenuRepository menuRepository, IOrderSizeRepository orderSizeRepository)
            : base(baseRepository)
     {
         _menuRepository = menuRepository;
         _orderSizeRepository = orderSizeRepository;
+        _extraRepository = extraRepository;
     }
 
     public decimal CalculateOrderTotal(Order order)
@@ -27,13 +29,18 @@ public class OrderManager : BaseManager<Order>, IOrderService
 
         decimal totalPrice = menu.Price * orderSize.PriceMultiplier;
 
-        if (order.Extras != null && order.Extras.Any())
+        // Extras'ı List<Extra> tipine çevir
+        var extrasList = order.Extras.ToList();
+        if(extrasList.Any())
         {
-            totalPrice += order.Extras.Sum(extra => extra.Price);
+            foreach (var extr in extrasList)
+            {
+                totalPrice += extr.Price;
+            }
         }
+
         totalPrice *= order.OrderPiece;
         return totalPrice;
     }
-
 
 }

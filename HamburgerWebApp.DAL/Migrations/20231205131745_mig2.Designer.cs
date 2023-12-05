@@ -4,6 +4,7 @@ using HamburgerWebApp.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HamburgerWebApp.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231205131745_mig2")]
+    partial class mig2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,15 +114,15 @@ namespace HamburgerWebApp.DAL.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8936b128-75db-4d17-90f4-cad439b5a4eb",
+                            ConcurrencyStamp = "f56e18b5-af42-42d0-9c14-17c536fc3080",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEE53rvctM79DHtSLRGRsfKTxr7S78hIyykGwSL4E95Xy0ucmEmd56SPBuU/2lE/xIQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGTZcHhhyxWwa4OEdtKJoJYbY6JQlwU3+aSSPf2mhwRgNImEwZqvhIClWIqZAa6xgg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5975285d-adbe-4a7f-88d5-8c85c3c0ccc9",
+                            SecurityStamp = "62a1fe7d-1bc3-4c2e-af69-56b570b8fd4d",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -271,14 +273,14 @@ namespace HamburgerWebApp.DAL.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "58ff1583-b9f7-4567-9e57-9528099a13de",
+                            ConcurrencyStamp = "cc82a18d-83a7-45ff-9240-50fe99d3a9c3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "51fb6a16-a142-4fd0-a251-8dc222dcb532",
+                            ConcurrencyStamp = "321c1838-78cc-4243-808e-6b673d41d998",
                             Name = "User",
                             NormalizedName = "USER"
                         });

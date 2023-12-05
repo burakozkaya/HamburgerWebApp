@@ -34,6 +34,7 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Create(Extra extra)
         {
             // Code for creating a new record in the database
+            ModelState.Remove("Orders");
             if (ModelState.IsValid)
             {
                 await _extraService.Add(extra);
@@ -57,7 +58,7 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Edit(Extra extra)
         {
             // Code for updating an existing record in the database
-
+            ModelState.Remove("Orders");
             if (ModelState.IsValid)
             {
                 await _extraService.Update(extra);

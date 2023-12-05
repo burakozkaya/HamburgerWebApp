@@ -1,7 +1,72 @@
 ﻿@model Order
+
 @{
     ViewData["Title"] = "Edit";
+
 }
 
-<h1>Edit</h1>
+<h1>Update</h1>
+
+<div class="content">
+    <div class="container-fluid">
+        <h4 class="page-title">Order İşlemleri</h4>
+        <div class="row">
+            <div class="col-md-12">
+                <form method="post">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Sipariş Girişi</div>
+                        </div>
+                        <input type="hidden" asp-for="Id" />
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="OrderPiece">Adet Giriniz</label>
+                                <input type="text" class="form-control" asp-for="OrderPiece" id="OrderPiece">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OrderSizeId">Order Size</label>
+                            <select asp-for="OrderSizeId" class="form-control" asp-items="ViewBag.OrderSizeList">
+                                <option value="">Select Order Size</option>
+                            </select>
+                            <span asp-validation-for="OrderSizeId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MenuId">Menu</label>
+                            <select asp-for="MenuId" class="form-control" asp-items="ViewBag.MenuList">
+                                <option value="">Select Menu</option>
+                            </select>
+                            <span asp-validation-for="MenuId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Extras</label>
+                            @foreach (var extra in ViewBag.ExtrasList)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="extra_@extra.Value" name="SelectedExtra" value="@extra.Value">
+                                    <label class="form-check-label" for="extra_@extra.Value">@extra.Text</label>
+                                </div>
+                            }
+                            <span asp-validation-for="Extras" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Edit" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+
+
+
 

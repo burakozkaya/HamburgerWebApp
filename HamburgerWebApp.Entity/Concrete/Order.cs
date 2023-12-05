@@ -1,4 +1,6 @@
-﻿namespace HamburgerWebApp.Entity.Concrete;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HamburgerWebApp.Entity.Concrete;
 
 public class Order : BaseEntity
 {
@@ -14,4 +16,6 @@ public class Order : BaseEntity
     public Menu Menu { get; set; }
 
     public AppUser AppUser { get; set; }
+
+  
 }
