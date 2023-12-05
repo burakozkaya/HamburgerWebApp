@@ -46,21 +46,21 @@ namespace HamburgerWebApp.UI.Controllers
         }
 
         // GET: OrderController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            var orderSizes = _orderService.GetAll().Select(os => new SelectListItem
+            var orderSizes = await _orderService.GetAll().Select(os => new SelectListItem
             {
                 Value = os.Id.ToString(),
                 Text = os.Size
             });
-            var menus = _orderService.GetAll().Select(menu => new SelectListItem
+            var menus = await _orderService.GetAll().Select(menu => new SelectListItem
             {
                 Value = menu.Id.ToString(),
                 Text = menu.Name
             });
             ViewBag.MenuList = menus;
 
-            var appUsers = _orderService.GetAll().Select(user => new SelectListItem
+            var appUsers = await _orderService.GetAll().Select(user => new SelectListItem
             {
                 Value = user.Id,
                 Text = user.UserName
