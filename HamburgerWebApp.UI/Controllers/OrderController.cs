@@ -1,9 +1,7 @@
 ﻿using HamburgerWebApp.BLL.Abstract;
 using HamburgerWebApp.DAL.Abstract;
-using HamburgerWebApp.DAL.Concrete;
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
@@ -48,25 +46,19 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
         {
-            var orderSizes = await _orderService.GetAll().Select(os => new SelectListItem
+            var orderSizes = _orderService.GetAll().Result.Select(os => new SelectListItem
             {
                 Value = os.Id.ToString(),
-                Text = os.Size
+                Text = os.OrderSize.Size
             });
-            var menus = await _orderService.GetAll().Select(menu => new SelectListItem
+            var menus = _orderService.GetAll().Result.Select(menu => new SelectListItem
             {
                 Value = menu.Id.ToString(),
-                Text = menu.Name
+                Text = menu.Menu.Name
             });
             ViewBag.MenuList = menus;
 
-            var appUsers = await _orderService.GetAll().Select(user => new SelectListItem
-            {
-                Value = user.Id,
-                Text = user.UserName
-            });
-            ViewBag.AppUserList = appUsers;
-
+            var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //ViewBag.OrderSizeList = orderSizes;
             return View();
         }
@@ -77,10 +69,10 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Create(Order order)
         {
             // Code for creating a new record in the database
-           
+
             if (ModelState.IsValid)
             {
-                order.Extras = _orderService.GetAll().Where(e => order.SelectedExtras.Contains(e.Id)).ToList();
+                //order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
                 order.OrderPrice = _orderService.CalculateOrderTotal(order);
                 await _orderService.Add(order);
                 return RedirectToAction(nameof(Index));

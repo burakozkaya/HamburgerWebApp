@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDALDependency(builder.Configuration.GetConnectionString("Data Source=SERGEN\\SQLEXPRESS;Initial Catalog=HamburgerAppDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"));
+builder.Services.AddDALDependency("Data Source=BURAKS_PC\\SQLEXPRESS;Initial Catalog=HamburgerAppDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
 builder.Services.AddBLLDependency();
 
