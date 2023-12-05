@@ -2,6 +2,7 @@
 using HamburgerWebApp.DAL.Abstract;
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
@@ -13,13 +14,20 @@ namespace HamburgerWebApp.UI.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IOrderSizeRepository _orderSizeRepository;
+        private readonly IMenuService _menuService;
+        private readonly IExtraService _extraService;
+        private readonly IOrderSizeService _orderSizeService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public OrderController(IOrderService orderService, IOrderSizeRepository orderSizeRepository)
+        public OrderController(IOrderService orderService, IOrderSizeRepository orderSizeRepository, IMenuService menuService, IExtraService extraService, IOrderSizeService orderSizeService, UserManager<AppUser> userManager)
         {
             _orderService = orderService;
             _orderSizeRepository = orderSizeRepository;
+            _menuService = menuService;
+            _extraService = extraService;
+            _orderSizeService = orderSizeService;
+            _userManager = userManager;
         }
-
 
 
         // GET: OrderController
@@ -46,17 +54,34 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
         {
-            var orderSizes = _orderService.GetAll().Result.Select(os => new SelectListItem
+            var menus=await _menuService.GetAll();
+            var orderSize = await _orderSizeService.GetAll();
+            var orders = await _orderService.GetAll();
+            var extra=await _extraService.GetAll();
+
+            var orderSizeList = orderSize.Select(order => new SelectListItem
             {
-                Value = os.Id.ToString(),
-                Text = os.OrderSize.Size
-            });
-            var menus = _orderService.GetAll().Result.Select(menu => new SelectListItem
+                Value = order.Id.ToString(),
+                Text = order.Size
+            }).Distinct(); 
+
+            var menuList = menus.Select(order => new SelectListItem
             {
-                Value = menu.Id.ToString(),
-                Text = menu.Menu.Name
-            });
-            ViewBag.MenuList = menus;
+                Value = order.Id.ToString(),
+                Text = order.Name
+            }).Distinct();
+            var Extra = menus.Select(order => new SelectListItem
+            {
+                Value = order.Id.ToString(),
+                Text = order.Name
+            }).Distinct();
+
+            //Order order=new Order({
+            //    MenuId = menuList
+            //}) 
+            ViewBag.ExtrasList = Extra;
+            ViewBag.OrderSizeList = orderSizeList;
+            ViewBag.MenuList = menuList;
 
             var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //ViewBag.OrderSizeList = orderSizes;
@@ -69,7 +94,7 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Create(Order order)
         {
             // Code for creating a new record in the database
-
+            order.AppUserId=User.FindFirstValue(claimType:ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
                 //order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
@@ -89,16 +114,14 @@ namespace HamburgerWebApp.UI.Controllers
         // POST: OrderController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(Order order)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                await _orderService.Update(order);
+                return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+            return View(order);
         }
 
         // GET: OrderController/Delete/5

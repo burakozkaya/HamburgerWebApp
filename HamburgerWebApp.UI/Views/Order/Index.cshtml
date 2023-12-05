@@ -6,32 +6,55 @@
 
 <h2>Order List</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Order Size ID</th>
-            <th>Order Piece</th>
-            <th>Order Price</th>
-            <th>Menu ID</th>
-            <th>App User ID</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderSizeId</td>
-                <td>@order.OrderPiece</td>
-                <td>@order.OrderPrice</td>
-                <td>@order.MenuId</td>
-                <td>@order.AppUserId</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@order.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@order.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<div class="content">
+	<div class="container-fluid">
+		<h4 class="page-title">Sipariş Alan İşlemleri</h4>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title">Sipariş Alan Listesi</div>
+					</div>
+					<div class="card-body">
+						<div class="card-sub">
+							Sipariş Alan ile ilgili işlemleri aşağıdan gerçekçekleştirebilirsiniz :
+						</div>
+						<table class="table mt-3">
+							<thead>
+								<tr>
+									<th scope="col">OrderSizeID</th>
+									<th scope="col">OrderPiece</th>
+									<th scope="col">OrderPrice</th>
+									<th scope="col">MenuId</th>
+									<th scope="col">AppUserId</th>
+									<th scope="col">Sil</th>
+									<th scope="col">Güncelle</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>@item.Id</td>
+										<td>@item.OrderPiece</td>
+										<td>@item.OrderPrice</td>
+										<td>@item.MenuId</td>
+										<td>@item.AppUserId</td>
+										<td><a href="/Order/Delete/@item.Id" class="btn btn-outline-danger">Sil</a></td>
+										<td><a href="/Order/Edit/@item.Id" class="btn btn-outline-success">Güncelle</a></td>
+									</tr>
+								}
+
+							</tbody>
+						</table>
+						<a href="/Order/Create/" class="btn btn-outline-primary">Order Girişi</a>
+					</div>
+				</div>
+
+
+			</div>
+
+		</div>
+	</div>
+</div>

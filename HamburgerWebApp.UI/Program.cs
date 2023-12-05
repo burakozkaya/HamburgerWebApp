@@ -16,9 +16,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
     opt.Password.RequireUppercase = false;
     opt.Password.RequireNonAlphanumeric = false;
     opt.Password.RequiredLength = 4;
-}).AddEntityFrameworkStores<AppDbContext>();
+}).AddEntityFrameworkStores<AppDbContext>(); 
 
-builder.Services.AddDALDependency("Data Source=BURAKS_PC\\SQLEXPRESS;Initial Catalog=HamburgerAppDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+builder.Services.AddDALDependency("Data Source=SERGEN\\SQLEXPRESS;Initial Catalog=HamburgerAppDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
 builder.Services.AddBLLDependency();
 
