@@ -1,41 +1,37 @@
-﻿@model IEnumerable<HamburgerWebApp.Entity.Concrete.Order>
+﻿@model IEnumerable<Order>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Order List";
 }
 
-<h1>Index</h1>
+<h2>Order List</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderPiece)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderPrice)
-            </th>
-            <th></th>
+            <th>Order Size ID</th>
+            <th>Order Piece</th>
+            <th>Order Price</th>
+            <th>Menu ID</th>
+            <th>App User ID</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderPiece)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderPrice)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderSizeId</td>
+                <td>@order.OrderPiece</td>
+                <td>@order.OrderPrice</td>
+                <td>@order.MenuId</td>
+                <td>@order.AppUserId</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@order.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

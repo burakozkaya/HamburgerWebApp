@@ -1,6 +1,11 @@
 ﻿using HamburgerWebApp.BLL.Abstract;
+using HamburgerWebApp.DAL.Abstract;
+using HamburgerWebApp.DAL.Concrete;
+using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace HamburgerWebApp.UI.Controllers
@@ -9,11 +14,16 @@ namespace HamburgerWebApp.UI.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
+        private readonly IOrderSizeRepository _orderSizeRepository;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IOrderSizeRepository orderSizeRepository)
         {
             _orderService = orderService;
+            _orderSizeRepository = orderSizeRepository;
         }
+
+
+
         // GET: OrderController
         public async Task<ActionResult> Index()
         {
@@ -38,22 +48,44 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: OrderController/Create
         public ActionResult Create()
         {
+            var orderSizes = _orderService.GetAll().Select(os => new SelectListItem
+            {
+                Value = os.Id.ToString(),
+                Text = os.Size
+            });
+            var menus = _orderService.GetAll().Select(menu => new SelectListItem
+            {
+                Value = menu.Id.ToString(),
+                Text = menu.Name
+            });
+            ViewBag.MenuList = menus;
+
+            var appUsers = _orderService.GetAll().Select(user => new SelectListItem
+            {
+                Value = user.Id,
+                Text = user.UserName
+            });
+            ViewBag.AppUserList = appUsers;
+
+            //ViewBag.OrderSizeList = orderSizes;
             return View();
         }
 
         // POST: OrderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Order order)
         {
-            try
+            // Code for creating a new record in the database
+           
+            if (ModelState.IsValid)
             {
+                order.Extras = _orderService.GetAll().Where(e => order.SelectedExtras.Contains(e.Id)).ToList();
+                order.OrderPrice = _orderService.CalculateOrderTotal(order);
+                await _orderService.Add(order);
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(order);
         }
 
         // GET: OrderController/Edit/5

@@ -1,0 +1,47 @@
+﻿@model Order
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Home/Index.cshtml";
+}
+
+<h1>Create</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="OrderSizeId">Order Size</label>
+        <select asp-for="OrderSizeId" class="form-control" asp-items="ViewBag.OrderSizeList">
+            <option value="">Select Order Size</option>
+        </select>
+        <span asp-validation-for="OrderSizeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MenuId">Menu</label>
+        <select asp-for="MenuId" class="form-control" asp-items="ViewBag.MenuList">
+            <option value="">Select Menu</option>
+        </select>
+        <span asp-validation-for="MenuId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AppUserId">App User</label>
+        <select asp-for="AppUserId" class="form-control" asp-items="ViewBag.AppUserList">
+            <option value="">Select App User</option>
+        </select>
+        <span asp-validation-for="AppUserId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Extras">Extras</label>
+        <select asp-for="Extras" class="form-control" asp-items="ViewBag.ExtrasList" multiple>
+        </select>
+        <span asp-validation-for="Extras" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+
