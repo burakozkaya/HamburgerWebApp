@@ -44,16 +44,18 @@ public class OrderManager : BaseManager<Order>, IOrderService
         return totalPrice;
     }
 
-    public override async Task<Order> Update(Order entity)
+    public async Task<Order> Update(Order entity, string[] selectedExtra)
     {
-        await base.Delete(entity);
+        var temp = await base.GetById(entity.Id);
+        await base.Delete(temp);
+        entity.OrderPrice = await CalculateOrderTotal(entity, selectedExtra);
+        entity.Id = default;
+        return await base.Add(entity);
+    }
 
-        var order = await base.GetById(entity.Id);
-        order.OrderPiece = entity.OrderPiece;
-        order.OrderSizeId = entity.OrderSizeId;
-        order.MenuId = entity.MenuId;
-        order.Extras = entity.Extras;
-        order.OrderPrice = await CalculateOrderTotal(order, entity.Extras.Select(e => e.Id.ToString()).ToArray());
-        return await base.Update(order);
+    public async Task Add(Order entity, string[] selectedExtra)
+    {
+        entity.OrderPrice = await CalculateOrderTotal(entity, selectedExtra);
+        await base.Add(entity);
     }
 }

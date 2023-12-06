@@ -47,32 +47,22 @@ namespace HamburgerWebApp.UI.Controllers
             var orderSize = await _orderSizeService.GetAll();
             var extra = await _extraService.GetAll();
 
-            var orderSizeList = orderSize.Select(order => new SelectListItem
+            ViewBag.OrderSizeList = orderSize.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Size
             }).Distinct();
 
-            var menuList = menus.Select(order => new SelectListItem
+            ViewBag.MenuList = menus.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-            var Extra = extra.Select(order => new SelectListItem
+            ViewBag.ExtrasList = extra.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-
-            //Order order=new Order({
-            //    MenuId = menuList
-            //}) 
-            ViewBag.ExtrasList = Extra;
-            ViewBag.OrderSizeList = orderSizeList;
-            ViewBag.MenuList = menuList;
-
-            var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //ViewBag.OrderSizeList = orderSizes;
             return View();
         }
 
@@ -81,17 +71,9 @@ namespace HamburgerWebApp.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Order order, string[] selectedExtra)
         {
-            ModelState.Remove("OrderSize");
-            ModelState.Remove("Menu");
-            ModelState.Remove("AppUser");
-            ModelState.Remove("Extras");
-            ModelState.Remove("AppUserId");
-
-            // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                order.OrderPrice = await _orderService.CalculateOrderTotal(order, selectedExtra);
-                await _orderService.Add(order);
+                await _orderService.Add(order, selectedExtra);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -107,29 +89,24 @@ namespace HamburgerWebApp.UI.Controllers
 
             var menus = await _menuService.GetAll();
             var orderSize = await _orderSizeService.GetAll();
-            var orders = await _orderService.GetAll();
             var extra = await _extraService.GetAll();
 
-            var orderSizeList = orderSize.Select(order => new SelectListItem
+            ViewBag.OrderSizeList = orderSize.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Size
             }).Distinct();
 
-            var menuList = menus.Select(order => new SelectListItem
+            ViewBag.MenuList = menus.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-            var Extra = extra.Select(order => new SelectListItem
+            ViewBag.ExtrasList = extra.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-
-            ViewBag.ExtrasList = Extra;
-            ViewBag.OrderSizeList = orderSizeList;
-            ViewBag.MenuList = menuList;
 
             var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return View(order);
@@ -142,29 +119,10 @@ namespace HamburgerWebApp.UI.Controllers
         {
 
             order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
-            ModelState.Remove("OrderSize");
-            ModelState.Remove("Menu");
-            ModelState.Remove("AppUser");
-            ModelState.Remove("Extras");
-            ModelState.Remove("AppUserId");
-            // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                if (selectedExtra == null)
-                {
-                    selectedExtra = new string[0];
-                }
-                order.OrderPrice = await _orderService.CalculateOrderTotal(order, selectedExtra);
-                await _orderService.Update(order);
+                await _orderService.Update(order, selectedExtra);
                 return RedirectToAction(nameof(Index));
-            }
-
-            var temp = ModelState.ErrorCount;
-            var tempx = ModelState.Values;
-            if (ModelState.IsValid)
-            {
-                await _orderService.Update(order);
-                return RedirectToAction("Index");
             }
             return View(order);
         }
