@@ -17,30 +17,43 @@ public class OrderManager : BaseManager<Order>, IOrderService
         _extraRepository = extraRepository;
     }
 
-    public decimal CalculateOrderTotal(Order order)
+    public async Task<decimal> CalculateOrderTotal(Order order, string[] selectedExtra)
     {
         Menu menu = _menuRepository.GetById(order.MenuId).Result;
-        OrderSize orderSize = _orderSizeRepository.GetById(order.OrderSizeId).Result;
 
-        if (menu == null || orderSize == null)
-        {
-            throw new InvalidOperationException("Menu or order size not found.");
-        }
+        OrderSize orderSize = _orderSizeRepository.GetById(order.OrderSizeId).Result;
 
         decimal totalPrice = menu.Price * orderSize.PriceMultiplier;
 
         // Extras'ı List<Extra> tipine çevir
-        var extrasList = order.Extras.ToList();
-        if(extrasList.Any())
+        if (selectedExtra.Length != 0)
         {
-            foreach (var extr in extrasList)
+            var extras = await _extraRepository.GetAll();
+
+            var selectedExtras = extras.Where(e => selectedExtra.Contains(e.Id.ToString())).ToList();
+
+            order.Extras = selectedExtras;
+
+            foreach (var extr in selectedExtras)
             {
                 totalPrice += extr.Price;
             }
         }
-
         totalPrice *= order.OrderPiece;
+
         return totalPrice;
     }
 
+    public override async Task<Order> Update(Order entity)
+    {
+        await base.Delete(entity);
+
+        var order = await base.GetById(entity.Id);
+        order.OrderPiece = entity.OrderPiece;
+        order.OrderSizeId = entity.OrderSizeId;
+        order.MenuId = entity.MenuId;
+        order.Extras = entity.Extras;
+        order.OrderPrice = await CalculateOrderTotal(order, entity.Extras.Select(e => e.Id.ToString()).ToArray());
+        return await base.Update(order);
+    }
 }

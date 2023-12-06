@@ -1,4 +1,4 @@
-﻿namespace HamburgerWebApp.UI.Models;
+﻿namespace HamburgerWebApp.UI.Models.UserVM;
 
 public class RegisterViewModel
 {

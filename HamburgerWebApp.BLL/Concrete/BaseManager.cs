@@ -39,7 +39,7 @@ public class BaseManager<T> : IBaseService<T> where T : class, IBaseEntity
         return await baseRepository.GetById(id);
     }
 
-    public async Task<T> Update(T entity)
+    public virtual async Task<T> Update(T entity)
     {
         return await baseRepository.Update(entity);
     }

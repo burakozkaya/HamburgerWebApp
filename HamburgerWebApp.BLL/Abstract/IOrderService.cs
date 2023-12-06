@@ -4,5 +4,5 @@ namespace HamburgerWebApp.BLL.Abstract;
 
 public interface IOrderService : IBaseService<Order>
 {
-    public decimal CalculateOrderTotal(Order order);
+    public Task<decimal> CalculateOrderTotal(Order order, string[] selectedExtra);
 }

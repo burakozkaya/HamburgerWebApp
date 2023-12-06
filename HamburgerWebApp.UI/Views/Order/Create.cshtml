@@ -1,4 +1,5 @@
-﻿@model Order
+﻿@using System.Security.Claims
+@model Order
 
 @{
     ViewData["Title"] = "Create";
@@ -19,26 +20,28 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label asp-for="OrderPiece">Piece</label>
+                                <input type="hidden" asp-for="AppUserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)"/>
+                                <label asp-for="MenuId">Menu</label>
+                                <select asp-for="MenuId" class="form-control" asp-items="ViewBag.MenuList">
+                                    <option value="">Select Menu</option>
+                                </select>
+                                <span asp-validation-for="MenuId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="OrderSizeId">Order Size</label>
+                                <select asp-for="OrderSizeId" class="form-control" asp-items="ViewBag.OrderSizeList">
+                                    <option value="">Select Order Size</option>
+                                </select>
+                                <span asp-validation-for="OrderSizeId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="OrderPiece">Amount</label>
                                 <input asp-for="OrderPiece" class="form-control" id="OrderPiece">
                                 <span asp-validation-for="OrderPiece" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="OrderSizeId">Order Size</label>
-                            <select asp-for="OrderSizeId" class="form-control" asp-items="ViewBag.OrderSizeList">
-                                <option value="">Select Order Size</option>
-                            </select>
-                            <span asp-validation-for="OrderSizeId" class="text-danger"></span>
-                        </div>
 
-                        <div class="form-group">
-                            <label asp-for="MenuId">Menu</label>
-                            <select asp-for="MenuId" class="form-control" asp-items="ViewBag.MenuList">
-                                <option value="">Select Menu</option>
-                            </select>
-                            <span asp-validation-for="MenuId" class="text-danger"></span>
-                        </div>
+
 
                         <div class="form-group">
                             <label>Extras</label>
@@ -74,6 +77,11 @@
 
 
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 
 
 

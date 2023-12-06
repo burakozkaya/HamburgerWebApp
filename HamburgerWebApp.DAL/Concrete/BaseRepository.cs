@@ -38,16 +38,40 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, IBaseEntity
 
     public async Task<T> GetById(int id)
     {
-        return await _context.Set<T>().FindAsync(id);
+        var query = _context.Set<T>().AsQueryable();
+
+        var navigationProperties = _context.Model.FindEntityType(typeof(T)).GetNavigations();
+        foreach (var navigationProperty in navigationProperties)
+        {
+            query = query.Include(navigationProperty.Name);
+        }
+
+        return await query.FirstOrDefaultAsync(entity => entity.Id == id);
     }
 
     public async Task<IEnumerable<T>> GetAll()
     {
-        return await _context.Set<T>().ToListAsync();
+        var query = _context.Set<T>().AsQueryable();
+
+        var navigationProperties = _context.Model.FindEntityType(typeof(T)).GetNavigations();
+        foreach (var navigationProperty in navigationProperties)
+        {
+            query = query.Include(navigationProperty.Name);
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> predicate)
     {
-        return await _context.Set<T>().Where(predicate).ToListAsync();
+        var query = _context.Set<T>().AsQueryable();
+
+        var navigationProperties = _context.Model.FindEntityType(typeof(T)).GetNavigations();
+        foreach (var navigationProperty in navigationProperties)
+        {
+            query = query.Include(navigationProperty.Name);
+        }
+
+        return await query.Where(predicate).ToListAsync();
     }
 }

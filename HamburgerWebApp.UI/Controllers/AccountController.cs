@@ -1,5 +1,5 @@
 ﻿using HamburgerWebApp.Entity.Concrete;
-using HamburgerWebApp.UI.Models;
+using HamburgerWebApp.UI.Models.UserVM;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

@@ -18,4 +18,10 @@
     <ProjectReference Include="..\HamburgerWebApp.BLL\HamburgerWebApp.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\MenuVM\" />
+    <Folder Include="Models\ExtraVM\" />
+    <Folder Include="Models\OrderVM\" />
+  </ItemGroup>
+
 </Project>

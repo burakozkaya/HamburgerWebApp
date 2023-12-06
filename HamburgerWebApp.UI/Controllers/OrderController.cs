@@ -1,8 +1,6 @@
 ﻿using HamburgerWebApp.BLL.Abstract;
-using HamburgerWebApp.DAL.Abstract;
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
@@ -13,20 +11,16 @@ namespace HamburgerWebApp.UI.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
-        private readonly IOrderSizeRepository _orderSizeRepository;
         private readonly IMenuService _menuService;
         private readonly IExtraService _extraService;
         private readonly IOrderSizeService _orderSizeService;
-        private readonly UserManager<AppUser> _userManager;
 
-        public OrderController(IOrderService orderService, IOrderSizeRepository orderSizeRepository, IMenuService menuService, IExtraService extraService, IOrderSizeService orderSizeService, UserManager<AppUser> userManager)
+        public OrderController(IOrderService orderService, IMenuService menuService, IExtraService extraService, IOrderSizeService orderSizeService)
         {
             _orderService = orderService;
-            _orderSizeRepository = orderSizeRepository;
             _menuService = menuService;
             _extraService = extraService;
             _orderSizeService = orderSizeService;
-            _userManager = userManager;
         }
 
 
@@ -45,18 +39,12 @@ namespace HamburgerWebApp.UI.Controllers
             }
         }
 
-        // GET: OrderController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
         {
             var menus = await _menuService.GetAll();
             var orderSize = await _orderSizeService.GetAll();
-            var orders = await _orderService.GetAll();
             var extra = await _extraService.GetAll();
 
             var orderSizeList = orderSize.Select(order => new SelectListItem
@@ -93,28 +81,16 @@ namespace HamburgerWebApp.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Order order, string[] selectedExtra)
         {
-            order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
             ModelState.Remove("OrderSize");
             ModelState.Remove("Menu");
             ModelState.Remove("AppUser");
             ModelState.Remove("Extras");
             ModelState.Remove("AppUserId");
+
             // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                if (selectedExtra.Length != 0)
-                {
-                    var extras = await _extraService.GetAll();
-                    var selectedExtras = extras.Where(e => selectedExtra.Contains(e.Id.ToString())).ToList();
-
-                    if (selectedExtra != null)
-                    {
-                        // Seçilen Extra'yı Order'ın Extras listesine ekleyin
-                        order.Extras = selectedExtras;
-                    }
-                }
-                // order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
-                order.OrderPrice = _orderService.CalculateOrderTotal(order);
+                order.OrderPrice = await _orderService.CalculateOrderTotal(order, selectedExtra);
                 await _orderService.Add(order);
                 return RedirectToAction(nameof(Index));
             }
@@ -151,15 +127,11 @@ namespace HamburgerWebApp.UI.Controllers
                 Text = order.Name
             }).Distinct();
 
-            //Order order=new Order({
-            //    MenuId = menuList
-            //}) 
             ViewBag.ExtrasList = Extra;
             ViewBag.OrderSizeList = orderSizeList;
             ViewBag.MenuList = menuList;
 
             var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //ViewBag.OrderSizeList = orderSizes;
             return View(order);
         }
 
@@ -178,18 +150,11 @@ namespace HamburgerWebApp.UI.Controllers
             // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                if (selectedExtra.Length != 0)
+                if (selectedExtra == null)
                 {
-                    var extras = await _extraService.GetAll();
-                    var selectedExtras = extras.Where(e => selectedExtra.Contains(e.Id.ToString())).ToList();
-
-                    if (selectedExtra != null)
-                    {
-                        order.Extras = selectedExtras;
-                    }
+                    selectedExtra = new string[0];
                 }
-                // order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
-                order.OrderPrice = _orderService.CalculateOrderTotal(order);
+                order.OrderPrice = await _orderService.CalculateOrderTotal(order, selectedExtra);
                 await _orderService.Update(order);
                 return RedirectToAction(nameof(Index));
             }
