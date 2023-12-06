@@ -1,6 +1,5 @@
 ﻿using HamburgerWebApp.BLL.Abstract;
 using HamburgerWebApp.DAL.Abstract;
-using HamburgerWebApp.DAL.Concrete;
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -92,7 +91,7 @@ namespace HamburgerWebApp.UI.Controllers
         // POST: OrderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Order order, string selectedExtra)
+        public async Task<ActionResult> Create(Order order, string[] selectedExtra)
         {
             order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
             ModelState.Remove("OrderSize");
@@ -103,14 +102,15 @@ namespace HamburgerWebApp.UI.Controllers
             // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                if (!string.IsNullOrEmpty(selectedExtra) && int.TryParse(selectedExtra, out int extraId))
+                if (selectedExtra.Length != 0)
                 {
-                    var selectedExtraa = await _extraService.GetById(extraId);
+                    var extras = await _extraService.GetAll();
+                    var selectedExtras = extras.Where(e => selectedExtra.Contains(e.Id.ToString())).ToList();
 
                     if (selectedExtra != null)
                     {
                         // Seçilen Extra'yı Order'ın Extras listesine ekleyin
-                        order.Extras = new List<Extra> { selectedExtraa };
+                        order.Extras = selectedExtras;
                     }
                 }
                 // order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
@@ -166,7 +166,7 @@ namespace HamburgerWebApp.UI.Controllers
         // POST: OrderController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Order order, string selectedExtra)
+        public async Task<ActionResult> Edit(Order order, string[] selectedExtra)
         {
 
             order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
@@ -178,14 +178,14 @@ namespace HamburgerWebApp.UI.Controllers
             // Code for creating a new record in the database
             if (ModelState.IsValid)
             {
-                if (!string.IsNullOrEmpty(selectedExtra) && int.TryParse(selectedExtra, out int extraId))
+                if (selectedExtra.Length != 0)
                 {
-                    var selectedExtraa = await _extraService.GetById(extraId);
+                    var extras = await _extraService.GetAll();
+                    var selectedExtras = extras.Where(e => selectedExtra.Contains(e.Id.ToString())).ToList();
 
                     if (selectedExtra != null)
                     {
-                        // Seçilen Extra'yı Order'ın Extras listesine ekleyin
-                        order.Extras = new List<Extra> { selectedExtraa };
+                        order.Extras = selectedExtras;
                     }
                 }
                 // order.Extras = _orderService.GetAll().Result.Where(e => order.Extras.Contains<Extra>(e.Id)).ToList();
@@ -204,15 +204,18 @@ namespace HamburgerWebApp.UI.Controllers
             return View(order);
         }
 
-   
-        // POST: OrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id)
+
+        // GET: OrderController/Delete/5
+        [HttpGet, ActionName("Delete")]
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var entity = _orderService.GetById(id).Result;
-            await _orderService.Delete(entity);
-            return RedirectToAction("Index");
+            var entity = await _orderService.GetById(id);
+            if (entity != null)
+            {
+                await _orderService.Delete(entity);
+            }
+            return RedirectToAction(nameof(Index));
         }
+
     }
 }

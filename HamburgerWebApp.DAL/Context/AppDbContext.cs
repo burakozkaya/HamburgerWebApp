@@ -18,6 +18,13 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.Extras)
+            .WithMany(e => e.Orders)
+            .UsingEntity(j => j.ToTable("OrderExtras"));
+
+
         var hasher = new PasswordHasher<AppUser>();
         //seed data for orderSize
         modelBuilder.Entity<OrderSize>().HasData(new OrderSize { Id = 1, Size = "Small", PriceMultiplier = 1 });

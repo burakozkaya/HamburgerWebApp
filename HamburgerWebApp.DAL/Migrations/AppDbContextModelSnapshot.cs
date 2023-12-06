@@ -34,7 +34,7 @@ namespace HamburgerWebApp.DAL.Migrations
 
                     b.HasIndex("OrdersId");
 
-                    b.ToTable("ExtraOrder");
+                    b.ToTable("OrderExtras", (string)null);
                 });
 
             modelBuilder.Entity("HamburgerWebApp.Entity.Concrete.AppUser", b =>
@@ -112,15 +112,15 @@ namespace HamburgerWebApp.DAL.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8936b128-75db-4d17-90f4-cad439b5a4eb",
+                            ConcurrencyStamp = "238398ff-54da-4204-a23a-16e794fbe405",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEE53rvctM79DHtSLRGRsfKTxr7S78hIyykGwSL4E95Xy0ucmEmd56SPBuU/2lE/xIQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELdALS0MErQWiEqbLqUCIUoW0gxfkYnQxQhAIm2PWjYu2YhZEXr37uha+eGjmL3rrA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5975285d-adbe-4a7f-88d5-8c85c3c0ccc9",
+                            SecurityStamp = "3690bd82-0f49-46db-8882-291407c400cd",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -271,14 +271,14 @@ namespace HamburgerWebApp.DAL.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "58ff1583-b9f7-4567-9e57-9528099a13de",
+                            ConcurrencyStamp = "561783ce-c71f-4ee6-bd85-a011647e997f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "51fb6a16-a142-4fd0-a251-8dc222dcb532",
+                            ConcurrencyStamp = "02890808-ea4c-4862-b4ec-f5953b972638",
                             Name = "User",
                             NormalizedName = "USER"
                         });

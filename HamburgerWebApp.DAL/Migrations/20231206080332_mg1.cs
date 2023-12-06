@@ -51,6 +51,20 @@ namespace HamburgerWebApp.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Extras",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Extras", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Menus",
                 columns: table => new
                 {
@@ -194,7 +208,7 @@ namespace HamburgerWebApp.DAL.Migrations
                     OrderPiece = table.Column<int>(type: "int", nullable: false),
                     OrderPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     MenuId = table.Column<int>(type: "int", nullable: false),
-                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,7 +217,8 @@ namespace HamburgerWebApp.DAL.Migrations
                         name: "FK_Orders_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Orders_Menus_MenuId",
                         column: x => x.MenuId,
@@ -219,23 +234,27 @@ namespace HamburgerWebApp.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Extras",
+                name: "OrderExtras",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<int>(type: "int", nullable: false),
-                    OrderId = table.Column<int>(type: "int", nullable: true)
+                    ExtrasId = table.Column<int>(type: "int", nullable: false),
+                    OrdersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Extras", x => x.Id);
+                    table.PrimaryKey("PK_OrderExtras", x => new { x.ExtrasId, x.OrdersId });
                     table.ForeignKey(
-                        name: "FK_Extras_Orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_OrderExtras_Extras_ExtrasId",
+                        column: x => x.ExtrasId,
+                        principalTable: "Extras",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderExtras_Orders_OrdersId",
+                        column: x => x.OrdersId,
                         principalTable: "Orders",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -243,14 +262,14 @@ namespace HamburgerWebApp.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "dfd0b9c0-332a-4233-84d8-b19e5cf4e6f2", "Admin", "ADMIN" },
-                    { "2", "443fd2a4-cc54-43bf-ace8-afb73d80b396", "User", "USER" }
+                    { "1", "561783ce-c71f-4ee6-bd85-a011647e997f", "Admin", "ADMIN" },
+                    { "2", "02890808-ea4c-4862-b4ec-f5953b972638", "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Surname", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "1", 0, "e8a42daf-3496-469c-a9c5-c402f5b86c5b", "admin@gmail.com", false, false, null, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAEAACcQAAAAEMXesqEbBAX6cjByLUg/U+xFVfGIhNxDcrS4sZ+eUeiOKlPoboOaI9sduiLFPxBZCg==", null, false, "3a0c36e4-1c83-46f1-9534-9bfa5065f06a", null, false, "admin" });
+                values: new object[] { "1", 0, "238398ff-54da-4204-a23a-16e794fbe405", "admin@gmail.com", false, false, null, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAEAACcQAAAAELdALS0MErQWiEqbLqUCIUoW0gxfkYnQxQhAIm2PWjYu2YhZEXr37uha+eGjmL3rrA==", null, false, "3690bd82-0f49-46db-8882-291407c400cd", null, false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "OrderSizes",
@@ -307,9 +326,9 @@ namespace HamburgerWebApp.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Extras_OrderId",
-                table: "Extras",
-                column: "OrderId");
+                name: "IX_OrderExtras_OrdersId",
+                table: "OrderExtras",
+                column: "OrdersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_AppUserId",
@@ -345,10 +364,13 @@ namespace HamburgerWebApp.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Extras");
+                name: "OrderExtras");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Extras");
 
             migrationBuilder.DropTable(
                 name: "Orders");
