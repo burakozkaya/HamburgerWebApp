@@ -1,6 +1,7 @@
 ﻿using HamburgerWebApp.DAL.Abstract;
 using HamburgerWebApp.DAL.Context;
 using HamburgerWebApp.Entity.Abstract;
+using HamburgerWebApp.Entity.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -46,6 +47,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, IBaseEntity
             query = query.Include(navigationProperty.Name);
         }
 
+        if (typeof(T) == typeof(Order))
+        {
+            query = query.Include("Extras");
+        }
         return await query.FirstOrDefaultAsync(entity => entity.Id == id);
     }
 

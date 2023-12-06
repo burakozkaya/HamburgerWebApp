@@ -43,26 +43,8 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
         {
-            var menus = await _menuService.GetAll();
-            var orderSize = await _orderSizeService.GetAll();
-            var extra = await _extraService.GetAll();
 
-            ViewBag.OrderSizeList = orderSize.Select(order => new SelectListItem
-            {
-                Value = order.Id.ToString(),
-                Text = order.Size
-            }).Distinct();
-
-            ViewBag.MenuList = menus.Select(order => new SelectListItem
-            {
-                Value = order.Id.ToString(),
-                Text = order.Name
-            }).Distinct();
-            ViewBag.ExtrasList = extra.Select(order => new SelectListItem
-            {
-                Value = order.Id.ToString(),
-                Text = order.Name
-            }).Distinct();
+            await Filler();
             return View();
         }
 
@@ -78,7 +60,7 @@ namespace HamburgerWebApp.UI.Controllers
             }
 
             var temp = ModelState.ErrorCount;
-            var tempx = ModelState.Values;
+            await Filler();
             return View(order);
         }
 
@@ -87,6 +69,14 @@ namespace HamburgerWebApp.UI.Controllers
         {
             var order = await _orderService.GetById(id);
 
+            await Filler();
+
+            var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return View(order);
+        }
+
+        private async Task Filler()
+        {
             var menus = await _menuService.GetAll();
             var orderSize = await _orderSizeService.GetAll();
             var extra = await _extraService.GetAll();
@@ -107,9 +97,6 @@ namespace HamburgerWebApp.UI.Controllers
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-
-            var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return View(order);
         }
 
         // POST: OrderController/Edit/5
@@ -118,12 +105,12 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Edit(Order order, string[] selectedExtra)
         {
 
-            order.AppUserId = User.FindFirstValue(claimType: ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
                 await _orderService.Update(order, selectedExtra);
                 return RedirectToAction(nameof(Index));
             }
+            await Filler();
             return View(order);
         }
 

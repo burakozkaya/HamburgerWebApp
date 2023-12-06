@@ -2,6 +2,7 @@ using HamburgerWebApp.BLL.Extension;
 using HamburgerWebApp.DAL.Context;
 using HamburgerWebApp.DAL.Extension;
 using HamburgerWebApp.Entity.Concrete;
+using HamburgerWebApp.UI.CustomMiddleware;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseStaticFiles();
 
 app.UseRouting();

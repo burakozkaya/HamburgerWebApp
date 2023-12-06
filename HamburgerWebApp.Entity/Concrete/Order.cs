@@ -13,9 +13,9 @@ public class Order : BaseEntity
     public int MenuId { get; set; }
     public string AppUserId { get; set; }
     [ValidateNever]
-    public IEnumerable<Extra> Extras { get; set; }
 
     //Nav Property
+    public IEnumerable<Extra> Extras { get; set; }
     [ValidateNever]
     public OrderSize OrderSize { get; set; }
     [ValidateNever]
