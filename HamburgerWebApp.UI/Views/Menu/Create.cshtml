@@ -4,33 +4,41 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<!-- Main Container -->
+<div class="container mt-5">
+    <!-- Title -->
+    <h2 class="text-center mb-4">Create Menu Item</h2>
 
-<h4>Menu</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <!-- Form Section -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Create">
+                <!-- Name Field -->
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="form-label">Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter item name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <!-- Price Field -->
+                <div class="form-group mb-4">
+                    <label asp-for="Price" class="form-label">Price</label>
+                    <input asp-for="Price" class="form-control" placeholder="Enter price" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <input type="submit" value="Create" class="btn btn-primary btn-block" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <!-- Back to List Link -->
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+    </div>
 </div>
 
 @section Scripts {

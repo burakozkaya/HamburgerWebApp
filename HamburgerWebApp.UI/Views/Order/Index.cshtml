@@ -4,48 +4,45 @@
     ViewData["Title"] = "Order List";
 }
 
-<h2>Orders List</h2>
+<!-- Main Container -->
+<div class="container mt-5">
+    <!-- Title -->
+    <h2 class="text-center mb-4">Orders List</h2>
 
+    <!-- Create Order Button -->
+    <div class="text-end mb-3">
+        <a asp-action="Create" class="btn btn-primary">Create Order</a>
+    </div>
 
-<div class="content">
-
-    <div class="container-fluid">
-
-        <div class="row">
-            <div class="col-md-12">
-
-                <div class="card">
-                    <div class="card-body">
-
-                        <table class="table mt-3">
-                            <a asp-action="Create" class="btn btn-primary">Create Order</a>
-
-                            <thead>
-                            <tr>
-                                <th scope="col">Menu Name</th>
-                                <th scope="col">Order Size</th>
-                                <th scope="col">Order Piece</th>
-                                <th scope="col">Order Price</th>
-                                <th scope="col"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@item.Menu.Name</td>
-                                    <td>@item.OrderSize.Size</td>
-                                    <td>@item.OrderPiece</td>
-                                    <td>@item.OrderPrice</td>
-                                        <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success">Edit</a>|<a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a></td>
-                                </tr>
-                            }
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Orders Table -->
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover table-responsive-md">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">Menu Name</th>
+                    <th scope="col">Order Size</th>
+                    <th scope="col">Order Piece</th>
+                    <th scope="col">Order Price</th>
+                    <th scope="col" class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Menu.Name</td>
+                        <td>@item.OrderSize.Size</td>
+                        <td>@item.OrderPiece</td>
+                        <td>@item.OrderPrice</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-success me-2">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
