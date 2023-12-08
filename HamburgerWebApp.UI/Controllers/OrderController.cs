@@ -30,12 +30,18 @@ namespace HamburgerWebApp.UI.Controllers
             if (User.IsInRole("Admin"))
             {
                 var orderList = await _orderService.GetAll();
-                return View(orderList);
+                ViewBag.Message = orderList.Message;
+                if (orderList.IsSuccess)
+                    return View(orderList.Data);
+                return View();
             }
             else
             {
                 var orderList = await _orderService.GetAll(order => order.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return View(orderList);
+                ViewBag.Message = orderList.Message;
+                if (orderList.IsSuccess)
+                    return View(orderList.Data);
+                return View();
             }
         }
 
@@ -55,11 +61,11 @@ namespace HamburgerWebApp.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _orderService.Add(order, selectedExtra);
-                return RedirectToAction(nameof(Index));
+                var response = await _orderService.Add(order, selectedExtra);
+                ViewBag.Message = response.Message;
+                if (response.IsSuccess)
+                    return RedirectToAction(nameof(Index));
             }
-
-            var temp = ModelState.ErrorCount;
             await Filler();
             return View(order);
         }
@@ -68,11 +74,16 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Edit(int id)
         {
             var order = await _orderService.GetById(id);
+            ViewBag.Message = order.Message;
+            if (order.IsSuccess)
+            {
+                await Filler();
 
-            await Filler();
+                var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return View(order.Data);
+            }
 
-            var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return View(order);
+            return View();
         }
 
         private async Task Filler()
@@ -81,18 +92,18 @@ namespace HamburgerWebApp.UI.Controllers
             var orderSize = await _orderSizeService.GetAll();
             var extra = await _extraService.GetAll();
 
-            ViewBag.OrderSizeList = orderSize.Select(order => new SelectListItem
+            ViewBag.OrderSizeList = orderSize.Data.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Size
             }).Distinct();
 
-            ViewBag.MenuList = menus.Select(order => new SelectListItem
+            ViewBag.MenuList = menus.Data.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
             }).Distinct();
-            ViewBag.ExtrasList = extra.Select(order => new SelectListItem
+            ViewBag.ExtrasList = extra.Data.Select(order => new SelectListItem
             {
                 Value = order.Id.ToString(),
                 Text = order.Name
@@ -107,8 +118,10 @@ namespace HamburgerWebApp.UI.Controllers
 
             if (ModelState.IsValid)
             {
-                await _orderService.Update(order, selectedExtra);
-                return RedirectToAction(nameof(Index));
+                var response = await _orderService.Update(order, selectedExtra);
+                if (response.IsSuccess)
+                    return RedirectToAction(nameof(Index));
+                ViewBag.Message = response.Message;
             }
             await Filler();
             return View(order);
@@ -120,10 +133,9 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             var entity = await _orderService.GetById(id);
-            if (entity != null)
-            {
-                await _orderService.Delete(entity);
-            }
+            if (entity.IsSuccess)
+                await _orderService.Delete(entity.Data);
+            ViewBag.Message = entity.Message;
             return RedirectToAction(nameof(Index));
         }
 
