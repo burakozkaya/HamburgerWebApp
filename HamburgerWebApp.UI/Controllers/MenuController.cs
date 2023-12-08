@@ -2,6 +2,7 @@
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HamburgerWebApp.UI.Controllers
 {
@@ -18,8 +19,23 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: MenuController
         public async Task<ActionResult> Index()
         {
-            var menuList = await _menuService.GetAll();
-            return View(menuList);
+            if (User.IsInRole("Admin"))
+            {
+                var menuList = await _menuService.GetAll();
+                ViewBag.Message = menuList.Message;
+                if (menuList.IsSuccess)
+                    return View(menuList.Data);
+                return View();
+            }
+
+            else
+            {
+                var manulist=await _menuService.GetAll();
+                ViewBag.Message = manulist.Message;
+                if (manulist.IsSuccess)
+                    return View(manulist.Data);
+                return View();
+            }
         }
 
         // GET: MenuController/Create
@@ -45,7 +61,13 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Edit(int id)
         {
             var menu = await _menuService.GetById(id);
-            return View(menu);
+            ViewBag.Message = menu.Message;
+            if (menu.IsSuccess)
+            {
+                var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return View(menu.Data);
+            }
+            return View();
         }
 
         // POST: MenuController/Edit/5
@@ -55,8 +77,10 @@ namespace HamburgerWebApp.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _menuService.Update(menu);
-                return RedirectToAction("Index");
+                var response = await _menuService.Update(menu);
+                if (response.IsSuccess)
+                    return RedirectToAction("Index");
+                ViewBag.Message = response.Message;
             }
             return View(menu);
         }
@@ -65,7 +89,9 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var menu = await _menuService.GetById(id);
-            await _menuService.Delete(menu);
+            if (menu.IsSuccess)
+                await _menuService.Delete(menu.Data);
+            ViewBag.Message = menu.Message;
             return RedirectToAction("Index", "Menu");
         }
     }

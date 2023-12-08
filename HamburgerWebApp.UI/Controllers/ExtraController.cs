@@ -2,6 +2,7 @@
 using HamburgerWebApp.Entity.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HamburgerWebApp.UI.Controllers
 {
@@ -17,8 +18,22 @@ namespace HamburgerWebApp.UI.Controllers
         // GET: ExtraController
         public async Task<ActionResult> Index()
         {
-            var extraList = await _extraService.GetAll();
-            return View(extraList);
+            if (User.IsInRole("Admin"))
+            {
+                var extraList = await _extraService.GetAll();
+                ViewBag.Massage = extraList.Message;
+                if(extraList.IsSuccess)
+                    return View(extraList.Data);
+                return View(extraList);
+            }
+            else
+            {
+                var extraList = await _extraService.GetAll();
+                if (extraList.IsSuccess)
+                    return View(extraList.Data);
+                return View();
+            }
+           
         }
 
         // GET: ExtraController/Create
@@ -37,8 +52,10 @@ namespace HamburgerWebApp.UI.Controllers
             ModelState.Remove("Orders");
             if (ModelState.IsValid)
             {
-                await _extraService.Add(extra);
-                return RedirectToAction(nameof(Index));
+                var response=await _extraService.Add(extra);
+                ViewBag.Message = response.Message;
+                if (response.IsSuccess)
+                    return RedirectToAction(nameof(Index));
             }
             return View(extra);
         }
@@ -48,7 +65,13 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Edit(int id)
         {
             var extra = await _extraService.GetById(id);
-            return View(extra);
+            ViewBag.Message = extra.Message;
+            if (extra.IsSuccess)
+            {
+                var tempUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return View(extra.Data);
+            }
+                return View();
         }
 
         // POST: ExtraController/Edit/5
@@ -61,8 +84,11 @@ namespace HamburgerWebApp.UI.Controllers
             ModelState.Remove("Orders");
             if (ModelState.IsValid)
             {
-                await _extraService.Update(extra);
+               var response= await _extraService.Update(extra);
+                if(response.IsSuccess)
+                    
                 return RedirectToAction("Index", "Extra");
+                ViewBag.Message=response.Message;
             }
             return View(extra);
         }
@@ -72,7 +98,11 @@ namespace HamburgerWebApp.UI.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var entity = _extraService.GetById(id).Result;
-            await _extraService.Delete(entity);
+            if(entity.IsSuccess)
+            {
+                await _extraService.Delete(entity.Data);
+            }
+            ViewBag.Message = entity.Message;
             return RedirectToAction("Index", "Extra");
         }
 
