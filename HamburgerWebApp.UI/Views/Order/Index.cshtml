@@ -20,6 +20,12 @@
             <table class="table table-hover table-responsive-md">
                 <thead class="table-light">
                 <tr>
+                @{
+                    if(User.IsInRole("Admin"))
+                    {
+                        <th scope="col">User Name</th>
+                    }
+                }
                     <th scope="col">Menu Name</th>
                     <th scope="col">Order Size</th>
                     <th scope="col">Order Piece</th>
@@ -31,6 +37,12 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        @{
+                            if(User.IsInRole("Admin"))
+                            {
+                                <td>@item.AppUser.UserName</td>
+                            }
+                        }
                         <td>@item.Menu.Name</td>
                         <td>@item.OrderSize.Size</td>
                         <td>@item.OrderPiece</td>
